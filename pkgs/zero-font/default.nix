@@ -7,16 +7,14 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "zero"; # Renamed to just "zero" as requested
+  pname = "zero";
   version = "1.0.0";
 
   src = ./src;
 
   # Define paths for the builder to use
-  # We assume resources are adjacent to this file (matching your snippet structure)
   rawPath = ./resources/zero-src;
 
-  # Conditional path logic adapted for mkDerivation
   condensedPath =
     if builtins.pathExists ./resources/zero-raw-condensed then ./resources/zero-raw-condensed else "";
 
@@ -28,14 +26,19 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    # Prepare the build script from the source directory
-    # Assumes make-zero.py is inside the ./src folder
+    # 1. Prepare the build script
     cp $src/make-zero.py ./build.py
 
+    # 2. [PATH FIX] Create the output structure locally first.
+    # The script expects 'share/fonts/truetype' to exist.
+    mkdir -p share/fonts/truetype
+
     echo "Generating Zero font..."
-    # Execute the python script via FontForge. 
-    # The script should read the 'rawPath' and 'condensedPath' env vars defined above.
-    fontforge -script ./build.py
+
+    # [FIX] We pass out=. ONLY to this command environment.
+    # This prevents overwriting the global $out variable (which points to /nix/store/...)
+    # so the installPhase can still find the correct destination.
+    out=. fontforge -script ./build.py
 
     runHook postBuild
   '';
@@ -43,10 +46,11 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
+    # Create the actual destination directory in the Nix store
     mkdir -p $out/share/fonts/truetype
 
-    # Install generated TTFs
-    install -Dm644 *.ttf -t $out/share/fonts/truetype/
+    # Install the generated files from our local build folder to the store
+    install -Dm644 share/fonts/truetype/*.ttf -t $out/share/fonts/truetype/
 
     runHook postInstall
   '';
@@ -55,6 +59,6 @@ stdenv.mkDerivation {
     description = "The Zero font, a minimalist display font.";
     license = licenses.mit;
     platforms = platforms.all;
-    maintainers = with maintainers; [ "doromiert" ];
+    maintainers = with maintainers; [ ];
   };
 }

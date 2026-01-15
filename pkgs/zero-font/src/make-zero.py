@@ -150,8 +150,10 @@ out_dir = f"{out_root}/share/fonts/truetype"
 
 raw_path = os.environ.get('rawPath')
 if raw_path:
-    generate_font("ZeroClock", "Regular", raw_path, f"{out_dir}/ZeroClock.ttf")
+    # Renamed from ZeroClock to Zero
+    generate_font("Zero", "Regular", raw_path, f"{out_dir}/Zero.ttf")
 
 condensed_src = os.environ.get('condensedPath', '')
 if condensed_src:
-    generate_font("ZeroClock Condensed", "Regular", condensed_src, f"{out_dir}/ZeroClock-Condensed.ttf")
+    # Renamed from ZeroClock Condensed to Zero Condensed
+    generate_font("Zero Condensed", "Regular", condensed_src, f"{out_dir}/Zero-Condensed.ttf")
