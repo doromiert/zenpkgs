@@ -14,7 +14,7 @@ stdenv.mkDerivation {
   buildInputs = [ python3 ];
 
   installPhase = ''
-
+    echo "this package isn't ready yet. remove it from your config"
   '';
 
   meta = with lib; {

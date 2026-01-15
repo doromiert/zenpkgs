@@ -6,7 +6,7 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "zenboot";
+  pname = "zeninstall";
   version = "1.0.0";
 
   src = ./src;
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "Bootloader and boot animation for ZenOS.";
+    description = "Graphical installer for ZenOS.";
     license = licenses.mit;
   };
 }
