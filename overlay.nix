@@ -7,23 +7,16 @@ let
   # 1. Read the ./pkgs directory
   dirContents = builtins.readDir packagesDir;
 
-  # 2. Filter: Only accept directories (containing default.nix) or .nix files
-  # This ignores READMEs, .gitkeeps, etc.
-  isValidPackage =
-    name: type: (type == "directory") || (type == "regular" && lib.hasSuffix ".nix" name);
+  # 2. Filter: Only accept directories
+  # We assume every directory here is a package containing a 'main.nix'
+  isPackageDir = name: type: type == "directory";
+  packageDirs = lib.filterAttrs isPackageDir dirContents;
 
-  packageNames = lib.filterAttrs isValidPackage dirContents;
-
-  # 3. Map names to final.callPackage
-  # This creates { zenos-hello = final.callPackage ./pkgs/zenos-hello {}; ... }
+  # 3. Map names to final.callPackage pointing to main.nix
+  # Result: { zenfs = final.callPackage ./pkgs/zenfs/main.nix {}; }
   autoPackages = lib.mapAttrs (
-    name: _: final.callPackage (packagesDir + "/${name}") { }
-  ) packageNames;
+    name: _: final.callPackage (packagesDir + "/${name}/main.nix") { }
+  ) packageDirs;
 
 in
-# Merge auto-discovered packages with any manual overrides you might want
 autoPackages
-// {
-  # You can still add manual overrides for nixpkgs here if needed
-  # discord = prev.discord.override { ... };
-}
