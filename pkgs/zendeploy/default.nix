@@ -6,7 +6,7 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "zeninstall";
+  pname = "zendeploy";
   version = "1.0.0";
 
   src = ./src;
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "Graphical installer for ZenOS.";
+    description = "Graphical and command-line installer for ZenOS.";
     license = licenses.mit;
   };
 }
